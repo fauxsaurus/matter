@@ -5,19 +5,20 @@ import styles from './App.module.css'
 
 type IUuid = string
 type IType = 'string' | 'number' | 'object' | 'array' | 'boolean' | 'regex'
+type IState = {id: IUuid; value: any; type: IType}
 
 const mkUuid = (): IUuid => self.crypto.randomUUID()
 
 const App: Component = () => {
-	const [state, setState] = createSignal<Record<IUuid, {id: IUuid; value: any; type: IType}>>({})
-	const uiState = () => Object.values(state()) // Needs to be an [] for `<Index>`.
+	const [states, setStates] = createSignal<Record<IUuid, IState>>({})
+	const uiState = () => Object.values(states()) // Needs to be an [] for `<Index>`.
 
-	const updateState = (id: IUuid, value: any, props = {}) =>
-		void setState(state =>
+	const setState = (id: IUuid, value: any, props = {}) =>
+		void setStates(state =>
 			Object.assign({}, state, {[id]: {...(state[id] ?? {}), value, ...props}})
 		)
 
-	const createNewState = (type: IType) => {
+	const createState = (type: IType) => {
 		const id = mkUuid()
 		const value = {
 			array: [],
@@ -27,10 +28,10 @@ const App: Component = () => {
 			regex: {pattern: '', flags: ''},
 			string: '',
 		}[type]
-		updateState(id, value, {id, type})
+		setState(id, value, {id, type})
 	}
 
-	const deleteState = (id: IUuid) => void setState(({[id]: _, ...state}) => state)
+	const deleteState = (id: IUuid) => void setStates(({[id]: _, ...state}) => state)
 
 	return (
 		<div class={styles.App}>
@@ -41,21 +42,19 @@ const App: Component = () => {
 					const input =
 						type === 'string' ? (
 							<textarea
-								oninput={event => updateState(id, event.currentTarget.value)}
+								oninput={event => setState(id, event.currentTarget.value)}
 								value={value}
 							></textarea>
 						) : type === 'number' ? (
 							<input
 								type="number"
-								oninput={event =>
-									updateState(id, event.currentTarget.valueAsNumber)
-								}
+								oninput={event => setState(id, event.currentTarget.valueAsNumber)}
 								value={value}
 							/>
 						) : type === 'boolean' ? (
 							<input
 								checked={value}
-								onchange={event => updateState(id, event.currentTarget.checked)}
+								onchange={event => setState(id, event.currentTarget.checked)}
 								type="checkbox"
 							/>
 						) : (
@@ -75,15 +74,15 @@ const App: Component = () => {
 				}}
 			</Index>
 			<div>
-				<button onClick={() => createNewState('string')}>""</button>
-				<button onClick={() => createNewState('number')}>#</button>
-				<button onClick={() => createNewState('array')}>[]</button>
-				<button onClick={() => createNewState('object')}>{'{}'}</button>
-				<button onClick={() => createNewState('boolean')}>tf</button>
-				<button onClick={() => createNewState('regex')}>*.</button>
+				<button onClick={() => createState('string')}>""</button>
+				<button onClick={() => createState('number')}>#</button>
+				<button onClick={() => createState('array')}>[]</button>
+				<button onClick={() => createState('object')}>{'{}'}</button>
+				<button onClick={() => createState('boolean')}>tf</button>
+				<button onClick={() => createState('regex')}>*.</button>
 			</div>
 			<output>
-				<pre>{JSON.stringify(state(), null, 4)}</pre>
+				<pre>{JSON.stringify(states(), null, 4)}</pre>
 			</output>
 		</div>
 	)
