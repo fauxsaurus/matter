@@ -2,6 +2,7 @@ import type {Component} from 'solid-js'
 import {createSignal, Index} from 'solid-js'
 
 import styles from './App.module.css'
+import {InputRegex} from './lib/components'
 
 type IUuid = string
 type IType = 'string' | 'number' | 'object' | 'array' | 'boolean' | 'regex'
@@ -61,28 +62,12 @@ const App: Component = () => {
 								type="checkbox"
 							/>
 						) : type === 'regex' ? (
-							<>
-								<input
-									oninput={event =>
-										setState(id, {
-											...item().value,
-											pattern: event.currentTarget.value,
-										})
-									}
-									type="text"
-									value={value.pattern}
-								/>
-								<input
-									oninput={event =>
-										setState(id, {
-											...item().value,
-											flags: event.currentTarget.value,
-										})
-									}
-									type="text"
-									value={value.flags}
-								/>
-							</>
+							<InputRegex
+								{...{
+									...value,
+									oninput: partial => setState(id, {...item().value, ...partial}),
+								}}
+							/>
 						) : (
 							`Editing type "${type}" not supported.`
 						)
