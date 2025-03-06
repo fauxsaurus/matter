@@ -25,7 +25,7 @@ const App: Component = () => {
 			boolean: false,
 			number: 0,
 			object: {},
-			regex: {pattern: '', flags: ''},
+			regex: {type: 'regex', pattern: '', flags: ''},
 			string: '',
 		}[type]
 		setState(id, value, {id, label: 'label', type})
@@ -60,6 +60,29 @@ const App: Component = () => {
 								onchange={event => setState(id, event.currentTarget.checked)}
 								type="checkbox"
 							/>
+						) : type === 'regex' ? (
+							<>
+								<input
+									oninput={event =>
+										setState(id, {
+											...item().value,
+											pattern: event.currentTarget.value,
+										})
+									}
+									type="text"
+									value={value.pattern}
+								/>
+								<input
+									oninput={event =>
+										setState(id, {
+											...item().value,
+											flags: event.currentTarget.value,
+										})
+									}
+									type="text"
+									value={value.flags}
+								/>
+							</>
 						) : (
 							`Editing type "${type}" not supported.`
 						)
