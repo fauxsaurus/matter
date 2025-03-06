@@ -30,6 +30,8 @@ const App: Component = () => {
 		updateState(id, value, {id, type})
 	}
 
+	const deleteState = (id: IUuid) => void setState(({[id]: _, ...state}) => state)
+
 	return (
 		<div class={styles.App}>
 			<Index each={uiState()}>
@@ -59,6 +61,9 @@ const App: Component = () => {
 							<label>
 								{id}: {input}
 							</label>
+							<button onclick={() => deleteState(id)} title="delete">
+								x
+							</button>
 						</div>
 					)
 				}}
