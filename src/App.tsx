@@ -2,7 +2,7 @@ import type {Component} from 'solid-js'
 import {createSignal, Index} from 'solid-js'
 
 import styles from './App.module.css'
-import {InputRegex, InputString} from './lib/components'
+import {InputNumber, InputRegex, InputString} from './lib/components'
 
 type IUuid = string
 type IType = 'string' | 'number' | 'object' | 'array' | 'boolean' | 'regex'
@@ -49,11 +49,7 @@ const App: Component = () => {
 						type === 'string' ? (
 							<InputString {...{oninput: value => setState(id, value), value}} />
 						) : type === 'number' ? (
-							<input
-								type="number"
-								oninput={event => setState(id, event.currentTarget.valueAsNumber)}
-								value={value}
-							/>
+							<InputNumber oninput={number => setState(id, number)} value={value} />
 						) : type === 'boolean' ? (
 							<input
 								checked={value}
