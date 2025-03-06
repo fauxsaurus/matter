@@ -5,7 +5,7 @@ import styles from './App.module.css'
 
 type IUuid = string
 type IType = 'string' | 'number' | 'object' | 'array' | 'boolean' | 'regex'
-type IState = {id: IUuid; value: any; type: IType}
+type IState = {id: IUuid; label: string; type: IType; value: any}
 
 const mkUuid = (): IUuid => self.crypto.randomUUID()
 
@@ -28,16 +28,19 @@ const App: Component = () => {
 			regex: {pattern: '', flags: ''},
 			string: '',
 		}[type]
-		setState(id, value, {id, type})
+		setState(id, value, {id, label: 'label', type})
 	}
 
 	const deleteState = (id: IUuid) => void setStates(({[id]: _, ...state}) => state)
+
+	const relabelState = (id: IUuid, label: string) =>
+		void setStates(state => Object.assign({}, state, {[id]: {...state[id], label}}))
 
 	return (
 		<div class={styles.App}>
 			<Index each={uiState()}>
 				{item => {
-					const {id, value, type} = item()
+					const {id, label, type, value} = item()
 
 					const input =
 						type === 'string' ? (
@@ -63,9 +66,12 @@ const App: Component = () => {
 
 					return (
 						<div>
-							<label>
-								{id}: {input}
-							</label>
+							<input
+								oninput={event => relabelState(id, event.currentTarget.value)}
+								value={label}
+								type="text"
+							/>
+							: {input}
 							<button onclick={() => deleteState(id)} title="delete">
 								x
 							</button>
