@@ -2,7 +2,7 @@ import type {Component} from 'solid-js'
 import {createSignal, Index} from 'solid-js'
 
 import styles from './App.module.css'
-import {InputRegex} from './lib/components'
+import {InputRegex, InputString} from './lib/components'
 
 type IUuid = string
 type IType = 'string' | 'number' | 'object' | 'array' | 'boolean' | 'regex'
@@ -40,15 +40,12 @@ const App: Component = () => {
 	return (
 		<div class={styles.App}>
 			<Index each={uiState()}>
-				{item => {
-					const {id, label, type, value} = item()
+				{state => {
+					const {id, label, type, value} = state()
 
 					const input =
 						type === 'string' ? (
-							<textarea
-								oninput={event => setState(id, event.currentTarget.value)}
-								value={value}
-							></textarea>
+							<InputString {...{oninput: value => setState(id, value), value}} />
 						) : type === 'number' ? (
 							<input
 								type="number"
@@ -65,7 +62,8 @@ const App: Component = () => {
 							<InputRegex
 								{...{
 									...value,
-									oninput: partial => setState(id, {...item().value, ...partial}),
+									oninput: partial =>
+										setState(id, {...state().value, ...partial}),
 								}}
 							/>
 						) : (
