@@ -52,6 +52,12 @@ const App: Component = () => {
 								}
 								value={value}
 							/>
+						) : type === 'boolean' ? (
+							<input
+								checked={value}
+								onchange={event => updateState(id, event.currentTarget.checked)}
+								type="checkbox"
+							/>
 						) : (
 							`Editing type "${type}" not supported.`
 						)
