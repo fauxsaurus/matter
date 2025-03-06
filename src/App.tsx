@@ -10,6 +10,16 @@ type IState = {id: IUuid; label: string; type: IType; value: any}
 
 const mkUuid = (): IUuid => self.crypto.randomUUID()
 
+const getDefaultState = (type: IType) =>
+	({
+		array: [],
+		boolean: false,
+		number: 0,
+		object: {},
+		regex: {type: 'regex', pattern: '', flags: ''},
+		string: '',
+	}[type])
+
 const App: Component = () => {
 	const [states, setStates] = createSignal<Record<IUuid, IState>>({})
 	const uiState = () => Object.values(states()) // Needs to be an [] for `<Index>`.
@@ -21,15 +31,7 @@ const App: Component = () => {
 
 	const createState = (type: IType) => {
 		const id = mkUuid()
-		const value = {
-			array: [],
-			boolean: false,
-			number: 0,
-			object: {},
-			regex: {type: 'regex', pattern: '', flags: ''},
-			string: '',
-		}[type]
-		setState(id, value, {id, label: 'label', type})
+		setState(id, getDefaultState(type), {id, label: 'label', type})
 	}
 
 	const deleteState = (id: IUuid) => void setStates(({[id]: _, ...state}) => state)
